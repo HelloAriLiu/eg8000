@@ -1,0 +1,14 @@
+{
+    "C_Cpp.errorSquiggles": "Enabled",
+
+    "clang.cflags": [
+        "-I${workspaceRoot}/lib/include",
+        "-I${workspaceRoot}/lib/libmqtt/include",
+        "-I${workspaceRoot}/include",
+    ],
+    "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.formatting": "Default",
+    "files.autoSave": "afterDelay",
+
+}
+
