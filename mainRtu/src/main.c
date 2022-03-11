@@ -252,7 +252,6 @@ void sys_work_task(int work_num)
 		upsHandle();
 		led_display();
 		sysCmdMonitor();
-		//wdg_handle();
 		usleep(50000);
 	}
 }

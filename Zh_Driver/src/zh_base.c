@@ -15,11 +15,8 @@ char *zh_get_sn(void)
     system("sudo cat /proc/cpuinfo |grep \"Serial\" |awk '{print $3}' > /home/pi/edge8000/app/cpuId.log");
     usleep(50000);
 
-    char ver1[128];
     static char devSN[17];
-
     FILE *verptr1;
-    FILE *verptr2;
     char lineStr[128];
 
     verptr1 = fopen("/home/pi/edge8000/app/cpuId.log", "r");
@@ -30,6 +27,15 @@ char *zh_get_sn(void)
             snprintf(devSN, sizeof(devSN), "%s", lineStr);
             devSN[16] = 0x00;
             devSN[strlen(devSN) - 1] = '\0';
+            unsigned int i = 0;
+            while (devSN[i]!=0x00 && devSN[i]!='\0')
+            {
+                if(devSN[i]>='a' && devSN[i]<='z')
+                {
+                    devSN[i]-= 32;
+                }
+                i++;
+            }
             fclose(verptr1);
             return devSN;
         }
