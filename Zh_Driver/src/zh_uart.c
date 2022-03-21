@@ -1,12 +1,11 @@
 #include "zh_usart.h"
 #include <termios.h>
 
-#define USART_1_DEVPATH "/dev/ttyAMA1"
-#define USART_2_DEVPATH "/dev/ttyAMA2"
+#define USART_1_DEVPATH "/dev/ttyAMA0"
+#define USART_2_DEVPATH "/dev/ttyAMA1"  //uart3
+#define USART_3_DEVPATH "/dev/ttyAMA2" //uart4
+#define USART_4_DEVPATH "/dev/ttyAMA3" //uart5
 
-#define USART_3_DEVPATH "/dev/ttymxc3" //485-2
-#define USART_4_DEVPATH "/dev/ttymxc4"//485-3
-#define USART_5_DEVPATH "/dev/ttymxc5"//透传
 #define USART_AT_DEVPATH "/dev/ttyUSB2"//AT
 
 
@@ -35,6 +34,24 @@ int zh_usart_open(Enum_UsartName usartName)
 	case USART_2:
 	{
 		usart_fd = open(USART_2_DEVPATH, O_RDWR);
+		if (usart_fd < 0)
+		{
+			return RES_ERROR;
+		}
+	}
+	break;
+	case USART_3:
+	{
+		usart_fd = open(USART_3_DEVPATH, O_RDWR);
+		if (usart_fd < 0)
+		{
+			return RES_ERROR;
+		}
+	}
+	break;
+	case USART_4:
+	{
+		usart_fd = open(USART_4_DEVPATH, O_RDWR);
 		if (usart_fd < 0)
 		{
 			return RES_ERROR;

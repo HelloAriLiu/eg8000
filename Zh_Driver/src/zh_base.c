@@ -1,8 +1,42 @@
 #include "zh_base.h"
 #include <math.h>
 #include "zh_i2c.h"
-#include "zh_led.h"
-#include "zh_key.h"
+
+#define UPS_PI_1 24 //GPIO19-IN
+#define KEY_PI_1 9  //GPIO3-IN
+#define POW4G_PI 22 //GPIO6-OUT
+#define WDI_PI 25   //GPIO26-OUT
+
+#define LED_PI_1 29 //GPIO21-OUT
+#define LED_PI_2 8  //GPIO2-OUT
+
+/**
+ * @brief :  需要在程序执行后全局调用一次
+ * @param {*}
+ * @return {}
+ * @author: LR
+ * @Date: 2021-10-29 10:17:19
+ */
+int zh_board_init(void)
+{
+    if (wiringPiSetup() == -1)
+    {
+        return RES_ERROR;
+    }
+
+    zh_io_init();
+    pinMode(WDI_PI, OUTPUT);
+    pinMode(KEY_PI_1, INPUT);
+    pinMode(UPS_PI_1, INPUT);
+
+    pinMode(LED_PI_1, OUTPUT);
+    pinMode(LED_PI_2, OUTPUT);
+
+    pinMode(POW4G_PI, OUTPUT);
+    digitalWrite(POW4G_PI, HIGH);
+    return RES_OK;
+}
+
 /**
  * @brief :  读取芯片唯一标示SN
  * @param {*}
@@ -28,11 +62,11 @@ char *zh_get_sn(void)
             devSN[16] = 0x00;
             devSN[strlen(devSN) - 1] = '\0';
             unsigned int i = 0;
-            while (devSN[i]!=0x00 && devSN[i]!='\0')
+            while (devSN[i] != 0x00 && devSN[i] != '\0')
             {
-                if(devSN[i]>='a' && devSN[i]<='z')
+                if (devSN[i] >= 'a' && devSN[i] <= 'z')
                 {
-                    devSN[i]-= 32;
+                    devSN[i] -= 32;
                 }
                 i++;
             }
@@ -304,20 +338,6 @@ int get_at_csq(void)
 }
 
 /**
- * @brief :  获取系统温湿度信息
- * @param {*}
- * @return {*}
- * @author: LR
- * @Date: 2021-10-29 10:25:58
- */
-#define SYSTH_DEVPATH "/dev/i2c-1"
-#define SYSTH_I2C_ADDR 0x40
-int zh_get_sysTH(Struct_sysTh *sysTh)
-{
-    return RES_OK;
-}
-
-/**
  * @brief :  设置LED状态
  * @param {Enum_LedName} ledName
  * @param {Enum_LedState} ledState
@@ -325,27 +345,25 @@ int zh_get_sysTH(Struct_sysTh *sysTh)
  * @author: LR
  * @Date: 2021-10-29 11:31:02
  */
-#define LED_1_DEVPATH "/sys/class/leds/led_net/brightness"
-#define LED_2_DEVPATH "/sys/class/leds/led_io/brightness"
-#define LED_3_DEVPATH "/sys/class/leds/led_work/brightness"
-
-int led_init = 0;
 int zh_led_setValue(Enum_LedName ledName, Enum_LedState ledState)
 {
-    if (led_init == 0)
+    int led_pin;
+    switch (ledName)
     {
-        if (wiringPiSetup() == -1)
-        {
-            return RES_ERROR;
-        }
-        pinMode(29, OUTPUT);
-        led_init = 1;
-    }
-    if (ledName == LED_1)
-    {
-        digitalWrite(29, ledState);
+    case LED_1:
+        led_pin = LED_PI_1;
+        break;
+    case LED_2:
+        led_pin = LED_PI_2;
+        break;
+    default:
+        return RES_ERROR;
     }
 
+    if (ledState != LED_ON && ledState != LED_OFF)
+        return RES_ERROR;
+
+    digitalWrite(led_pin, ledState);
     return RES_OK;
 }
 
@@ -356,148 +374,34 @@ int zh_led_setValue(Enum_LedName ledName, Enum_LedState ledState)
  * @author: LR
  * @Date: 2021-10-29 11:32:44
  */
-#define KEY_DEVPATH "/sys/class/gpio/gpio23/value"
-
 int zh_key_getValue(Enum_KeyName keyName)
 {
-    // FILE *key_fd;
-    // key_fd = fopen(KEY_DEVPATH, "r"); //按键
-
-    // if (key_fd == NULL)
-    //     return RES_ERROR;
-
-    // char key_value[5];
-    // if (fgets(key_value, 5, key_fd) == NULL)
-    // {
-    //     fclose(key_fd);
-    //     return RES_ERROR;
-    // }
-    // fclose(key_fd);
-
-    // if (atoi(key_value) == 0)
-    // {
-    //     return 0;
-    // }
-    // else
-    // {
-    return 1;
-    // }
-}
-
-/***************************************************
- * 功能：硬件喂狗
- * 参数：NULL
- * 返回：RES_OK 1; RES_ERROR -1;
- * 作者 ：LR
- * 修改日期 ：2020年03月27日 
-***************************************************/
-int iwdg_init = 0;
-int zh_iwdg_feed(void)
-{
-    if (iwdg_init == 0)
+    if (digitalRead(KEY_PI_1) == LOW) //按下
     {
-        if (wiringPiSetup() == -1)
-        {
-            return RES_ERROR;
-        }
-        pinMode(25, OUTPUT);
-        iwdg_init = 1;
-    }
-
-    if (digitalRead(25) == 1)
-    {
-        digitalWrite(25, 0);
+        return 1;
     }
     else
     {
-        digitalWrite(25, 1);
+        return 0;
     }
-
-    return RES_OK;
 }
-
-/***************************************************
- * 功能：shell 系统命令处理
- * 参数：*cmd -shell命令字符串；*answer-期望的正确回复 ；
- *              timeout 命令执行超时时间s 0-表示无超时时间
- * 返回：RES_OK 1; RES_ERROR -1;
- * 作者 ：LR
- * 修改日期 ：2020年03月27日 
-***************************************************/
-int zh_systemCmd(char *cmd, char *answer, uint16_t timeout)
+/**
+ * @brief :  看门狗
+ * @param {*}
+ * @return {*}
+ * @author: LR
+ * @Date: 2022-03-16 03:35:24
+ */
+int zh_wdg_feed(void)
 {
-    // if (strlen(cmd) <= 0 || strlen(cmd) > 512 || strlen(cmd) > 128 || timeout > 30)
-    //     return RES_ERROR;
-
-    // char res_linebuf[512];
-    // char command[512];
-    // char result[128];
-
-    // sprintf(command, "%s", cmd);
-    // sprintf(result, "%s", answer);
-
-    // FILE *f;
-    // f = fopen("/home/systemCmd.log", "w+");
-    // if (f == NULL)
-    // {
-    //     return RES_ERROR;
-    // }
-    // system(command);
-    // if (timeout > 0)
-    // {
-    //     sleep(timeout);
-    // }
-    // fseek(f, 0, SEEK_SET);                     //定位文件指针到文件开始位置
-    // while (fgets(res_linebuf, 512, f) != NULL) //按行获取
-    // {
-    //     if (fgetc(f) == EOF) //文件末尾
-    //     {
-    //         break;
-    //     }
-    //     if (strstr(res_linebuf, result) != NULL)
-    //     {
-    //         fclose(f);
-    //         return RES_OK;
-    //     }
-    //     fseek(f, -1, SEEK_CUR); //定位文件指针为当前位置向下移动一行
-    // }
-
-    // fclose(f);
-    return RES_OK;
-}
-
-/***************************************************
- * 功能：test设置BEEP状态
- * 参数：ledName ,LED编号 one value of Enum_LedName.
- 				ledState,开关状态  one value of Enum_LedState.
- * 返回：RES_OK 1; RES_ERROR -1	;
- * 作者 ：LR
- * 修改日期 ：2020年03月27日 
-***************************************************/
-#define Beep_1_DEVPATH "/sys/class/leds/beep/brightness"
-int zh_beep_setValue(int on_off)
-{
-    // int beep_fd = -1;
-    // beep_fd = open(Beep_1_DEVPATH, O_RDWR);
-    // if (beep_fd < 0)
-    //     return RES_ERROR;
-
-    // char databuff[3];
-    // if (on_off == 1)
-    // {
-    //     sprintf(databuff, "1");
-    // }
-    // else
-    // {
-    //     sprintf(databuff, "0");
-    // }
-    // if (write(beep_fd, databuff, strlen(databuff)) < 0)
-    // {
-    //     close(beep_fd);
-    //     return RES_ERROR;
-    // }
-
-    // close(beep_fd);
+    if (digitalRead(WDI_PI) == LOW)
+    {
+        digitalWrite(WDI_PI, HIGH);
+    }
+    else
+    {
+        digitalWrite(WDI_PI, LOW);
+    }
     return RES_OK;
 }
 
@@ -508,23 +412,9 @@ int zh_beep_setValue(int on_off)
  * @author: LR
  * @Date: 2021-11-25 14:59:10
  */
-// #define VIN_DEVPATH "/sys/class/gpio/gpio120/value"
-int vin_init = 0;
 int zh_vin_getValue(void)
 {
-    if (vin_init == 0)
-    {
-        if (wiringPiSetup() == -1)
-        {
-            return RES_ERROR;
-        }
-
-        pinMode(24, INPUT);
-
-        vin_init = 1;
-    }
-
-    return digitalRead(24);
+    return digitalRead(UPS_PI_1);
 }
 
 /**

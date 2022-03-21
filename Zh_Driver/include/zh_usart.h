@@ -1,6 +1,6 @@
 /*
  * @Description :  
- * @FilePath: /sdk_project/include/zh_usart.h
+ * @FilePath: /app_code/Zh_Driver/include/zh_usart.h
  * @Author:  LR
  * @Date: 2021-09-10 16:36:12
  */
@@ -46,8 +46,10 @@ typedef enum
 
 typedef enum
 {
-	USART_1 = 3,
-	USART_2 = 4,
+	USART_1 = 0,
+	USART_2 = 1,
+	USART_3 = 2,
+	USART_4 = 4,
 	USART_AT = 100
 } Enum_UsartName;
 

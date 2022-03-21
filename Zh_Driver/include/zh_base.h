@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-11-26 17:54:06
- * @LastEditTime: 2022-01-10 12:48:26
+ * @LastEditTime: 2022-03-17 04:47:15
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /app_code/Zh_Driver/include/zh_base.h
@@ -39,22 +39,8 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <wiringPi.h>
-#include "zh_led.h"
 #include "zh_usart.h"
 
-
-
-
-
-
-
-
-
-
-
-/*aiao芯片*/
-#define  BASE    64
-#define  Address 0x48
 
 
 #define RES_OK 0
@@ -83,12 +69,62 @@ typedef enum
 } SYS_INFO;
 
 
-typedef struct
+
+/******************************************************************************************
+ * key name
+******************************************************************************************/
+typedef enum
 {
-    float temp;  //温度
-    float humi;  //湿度
-    int error_code;
-} Struct_sysTh;
+	KEY0 = 0,
+} Enum_KeyName;
+
+/******************************************************************************************
+ * led name
+*******************************************************************************************/
+typedef enum
+{
+	LED_1 = 1,
+	LED_2,
+	LED_3
+} Enum_LedName;
+/******************************************************************************************
+ * led state
+******************************************************************************************/
+typedef enum
+{
+	LED_ON= 0,
+	LED_OFF
+} Enum_LedState;
+
+
+/**
+ * @brief :  需要在程序执行后全局调用一次
+ * @param {*}
+ * @return {}
+ * @author: LR
+ * @Date: 2021-10-29 10:17:19
+ */
+int zh_board_init(void);
+
+/**
+ * @brief :  设置LED状态
+ * @param {Enum_LedName} ledName
+ * @param {Enum_LedState} ledState
+ * @return {*}
+ * @author: LR
+ * @Date: 2021-10-29 11:31:02
+ */
+int zh_led_setValue(Enum_LedName ledName, Enum_LedState ledState);
+
+
+/**
+ * @brief :  获取按键key值
+ * @param {Enum_KeyName} keyName
+ * @return {*}
+ * @author: LR
+ * @Date: 2021-10-29 11:32:44
+ */
+ int  zh_key_getValue(Enum_KeyName keyName);
 
 
 /**
@@ -155,14 +191,6 @@ char *get_at_ccid(void);
  */
 int get_at_csq(void);
 
-/**
- * @brief :  获取系统温湿度信息
- * @param {*}
- * @return {*}
- * @author: LR
- * @Date: 2021-10-29 10:25:58
- */
-int zh_get_sysTH(Struct_sysTh *sysTh);
 
 
 /**
