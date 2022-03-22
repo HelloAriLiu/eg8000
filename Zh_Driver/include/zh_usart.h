@@ -49,9 +49,9 @@ typedef enum
 	USART_1 = 0,
 	USART_2 = 1,
 	USART_3 = 2,
-	USART_4 = 4,
+	USART_4 = 3,
 	USART_AT = 100
-} Enum_UsartName;
+} Enum_UsartName; 
 
 /******************************************************************************************
  * 功能：打开串口

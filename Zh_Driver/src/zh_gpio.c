@@ -11,15 +11,15 @@
 
 
 
-#define DO_PI_1  1//GPIOG8
-#define DO_PI_2  4 //GPIOG9
-#define DO_PI_3  5  //GPIOC0
-#define DO_PI_4  6  //GPIOC1
+#define DO_PI_1  1//GPIO18
+#define DO_PI_2  4 //GPIO23
+#define DO_PI_3  5  //GPIO24
+#define DO_PI_4  6  //GPIO25
 
-#define DI_PI_1  0    //GPIOG11
-#define DI_PI_2  2   //GPIOA6
-#define DI_PI_3  3  //GPIOA2
-#define DI_PI_4  12  //GPIOA3
+#define DI_PI_1  0    //GPIO17
+#define DI_PI_2  2   //GPIO27
+#define DI_PI_3  3  //GPIO22
+#define DI_PI_4  12  //GPIO10
 
 unsigned char din_gpio[4] = {DI_PI_1, DI_PI_2, DI_PI_3, DI_PI_4};
 unsigned char dout_gpio[4] = {DO_PI_1, DO_PI_2, DO_PI_3, DO_PI_4};
@@ -73,6 +73,7 @@ int zh_din_get(Struct_DinLevel *dinLevel)
  * @return {*}
  * @author: LR
  * @Date: 2022-03-15 06:35:49
+ * 
  */
 int zh_din_getLevel(int din_num)
 {

@@ -10,14 +10,13 @@
 #include "zh_base.h"
 #include "zh_pcf8563tDriver.h"
 
-
 /*
 *******************************************************************************************
 *                               CONFIGURE 主配置
 *******************************************************************************************
 */
 
-#define PCF8563T_CALLADDR 0xA2 // 主叫地址
+#define PCF8563T_CALLADDR 0x51 // 主叫地址
 #define PCF8563T_DEVPATH "/dev/i2c-10"
 
 // only support year from 2000 to 2199
@@ -55,13 +54,13 @@ int pcf8563t_getTime(struct tm *time)
         goto REEOR_IIC;
     }
 
-    time->tm_sec = msg_data[0] & 0x0F;
-    time->tm_min = msg_data[1] & 0x0F;
-    time->tm_hour = msg_data[2] & 0x0F;
-    time->tm_mday = msg_data[3] & 0x0F;
-    time->tm_wday = msg_data[4] & 0x0F;
-    time->tm_mon = (msg_data[5] & 0x0F) - 1;
-    time->tm_year = (msg_data[6] & 0x0F) + 100;
+    time->tm_sec = ((msg_data[0]>>4) &0x07) *10 +  ((msg_data[0]) &0x0F);
+    time->tm_min = ((msg_data[1]>>4) &0x07) *10 +  ((msg_data[1]) &0x0F);
+    time->tm_hour = ((msg_data[2]>>4) &0x03) *10 +  ((msg_data[2]) &0x0F);
+     time->tm_mday =   ((msg_data[3]>>4) &0x03) *10 +  ((msg_data[3]) &0x0F);
+    time->tm_wday = msg_data[4] &0x07;
+    time->tm_mon = ((msg_data[5]>>4) & 0x01) *10 +  ((msg_data[5]) &0x0F)- 1;
+    time->tm_year =((msg_data[6]>>4) &0x0F) *10 +  ((msg_data[6]) &0x0F)+ 100;
 
     i2c_close(&i2c);
     return RES_OK;
@@ -82,18 +81,39 @@ REEOR_IIC:
 *******************************************************************************************/
 int pcf8563t_setTime(struct tm *time)
 {
-
     uint8_t msg_data[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
     msg_data[0] = 0x02; //RegAddr_Sec
 
-    msg_data[1] = (uint8_t)(time->tm_sec);
-    msg_data[2] = (uint8_t)(time->tm_min);
-    msg_data[3] = (uint8_t)(time->tm_hour);
-    msg_data[4] = (uint8_t)(time->tm_mday);
-    msg_data[5] = (uint8_t)(time->tm_wday);
-    msg_data[6] = (uint8_t)(time->tm_mon + 1);
-    msg_data[7] = (uint8_t)(time->tm_year - 100);
+    uint8_t ten_temp=0x00,unit_temp =0x00 ;
+    ten_temp =  (uint8_t)(time->tm_sec) /10;
+    unit_temp =  (uint8_t)(time->tm_sec) %10;
+    msg_data[1] = ten_temp<<4 | unit_temp;
+
+
+    ten_temp =  (uint8_t)(time->tm_min) /10;
+    unit_temp =  (uint8_t)(time->tm_min) %10;
+    msg_data[2] = ten_temp<<4 | unit_temp;
+
+
+    ten_temp =  (uint8_t)(time->tm_hour) /10;
+    unit_temp =  (uint8_t)(time->tm_hour) %10;
+    msg_data[3] = ten_temp<<4 | unit_temp;
+
+    ten_temp =  (uint8_t)(time->tm_mday) /10;
+    unit_temp =  (uint8_t)(time->tm_mday) %10;
+    msg_data[4] = ten_temp<<4 | unit_temp;
+
+    unit_temp =  (uint8_t)(time->tm_wday);
+    msg_data[5] =  unit_temp;
+
+    ten_temp =  (uint8_t)(time->tm_mon+1) /10;
+    unit_temp =  (uint8_t)(time->tm_mon+1) %10;
+    msg_data[6] = ten_temp<<4 | unit_temp;
+
+    ten_temp =  (uint8_t)(time->tm_year - 100) /10;
+    unit_temp =  (uint8_t)(time->tm_year - 100) %10;
+    msg_data[7] = ten_temp<<4 | unit_temp;
+
 
     i2c_t i2c;
     /* Open the i2c-0 bus */

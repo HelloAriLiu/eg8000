@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-11-26 17:54:06
- * @LastEditTime: 2022-03-17 04:47:15
+ * @LastEditTime: 2022-03-22 09:43:20
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /app_code/Zh_Driver/include/zh_base.h
@@ -40,8 +40,6 @@
 #include <linux/can/raw.h>
 #include <wiringPi.h>
 #include "zh_usart.h"
-
-
 
 #define RES_OK 0
 #define RES_ERROR -1

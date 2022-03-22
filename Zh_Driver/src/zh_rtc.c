@@ -2,7 +2,6 @@
 #include "zh_rtc.h"
 #include "zh_pcf8563tDriver.h"
 
-
 /***************************************************
  * 功能：获取rtc时间信息
  * 参数：tm,时间结构体  one value of Struct_tm.
@@ -12,13 +11,17 @@
 ***************************************************/
 int zh_getTm_rtc(struct tm *des_tm)
 {
-    struct tm *p;
-    p = &des_tm;
-
-    if (pcf8563t_getTime(p) != RES_OK)
+    // struct tm *p;
+    // p = &des_tm;
+    if (pcf8563t_getTime(des_tm) != RES_OK)
     {
         return RES_ERROR;
     }
+
+    // char strTime[1024];
+    // sprintf(strTime, "%04d-%02d-%02d %02d:%02d:%02d", (1900 + des_tm->tm_year), (1 + des_tm->tm_mon), des_tm->tm_mday, (des_tm->tm_hour) % 24, des_tm->tm_min, des_tm->tm_sec);
+    // printf("get rtc datatime : %s \n \n", strTime);
+    //printf("pcf8563t_getTime  222\n");
 
     return RES_OK;
 }
@@ -32,17 +35,13 @@ int zh_getTm_rtc(struct tm *des_tm)
 ***************************************************/
 int zh_setTm_rtc(struct tm *src_tm)
 {
-    struct tm *p;
-    p=&src_tm;
-
-    if (pcf8563t_setTime(p) != RES_OK)
+    if (pcf8563t_setTime(src_tm) != RES_OK)
     {
         return RES_ERROR;
     }
 
     return RES_OK;
 }
-
 
 /***************************************************
  * 功能：系统时间同步到硬件RTC
@@ -80,7 +79,7 @@ int rtc_systime_sync(void)
         return RES_ERROR;
 
     char strTime[128];
-    sprintf(strTime, "%04d-%02d-%02d %02d:%02d:%02d", (1900 + p->tm_year), (1 + p->tm_mon), p->tm_mday, (p->tm_hour ) % 24, p->tm_min, p->tm_sec);
+    sprintf(strTime, "%04d-%02d-%02d %02d:%02d:%02d", (1900 + p->tm_year), (1 + p->tm_mon), p->tm_mday, (p->tm_hour) % 24, p->tm_min, p->tm_sec);
 
     char strtemp[128];
     sprintf(strtemp, "sudo date --s=\"%s\"", strTime);
@@ -107,7 +106,7 @@ long get_rtc_timestamp(void)
         printf("zh_getTm_rtc Error !\n");
         return RES_ERROR;
     }
-    printf("Get RTC:%04d-%02d-%02d %02d:%02d:%02d\n", (1900 + p1->tm_year), (1 + p1->tm_mon), p1->tm_mday, (p1->tm_hour+8) % 24, p1->tm_min, p1->tm_sec);
+    printf("Get RTC:%04d-%02d-%02d %02d:%02d:%02d\n", (1900 + p1->tm_year), (1 + p1->tm_mon), p1->tm_mday, (p1->tm_hour + 8) % 24, p1->tm_min, p1->tm_sec);
 
     return mktime(p1);
 }
@@ -131,10 +130,9 @@ int set_rtc_timestamp(int timestamp)
         printf("zh_setTm_rtc Error!\n");
         return RES_ERROR;
     }
-    printf("Set RTC:%04d-%02d-%02d %02d:%02d:%02d\n", (1900 + p->tm_year), (1 + p->tm_mon), p->tm_mday, (p->tm_hour+8) % 24, p->tm_min, p->tm_sec);
+    printf("Set RTC:%04d-%02d-%02d %02d:%02d:%02d\n", (1900 + p->tm_year), (1 + p->tm_mon), p->tm_mday, (p->tm_hour + 8) % 24, p->tm_min, p->tm_sec);
 
     rtc_systime_sync();
 
     return RES_OK;
 }
-
