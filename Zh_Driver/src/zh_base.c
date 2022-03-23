@@ -10,7 +10,7 @@
 #define LED_PI_1 29 //GPIO21-OUT
 #define LED_PI_2 8  //GPIO2-OUT
 
-#define HUBRST_PI  28//GPIO20-OUT
+#define HUBRST_PI 28 //GPIO20-OUT
 
 /**
  * @brief :  需要在程序执行后全局调用一次
@@ -21,6 +21,9 @@
  */
 int zh_board_init(void)
 {
+    if (zh_aio_init() != RES_OK)
+        return RES_ERROR;
+
     if (wiringPiSetup() == -1)
     {
         return RES_ERROR;
@@ -37,7 +40,7 @@ int zh_board_init(void)
     pinMode(POW4G_PI, OUTPUT);
     digitalWrite(POW4G_PI, HIGH);
 
-   // pinMode(HUBRST_PI, OUTPUT);   此处使能USB-HUB复位用
+    // pinMode(HUBRST_PI, OUTPUT);   此处使能USB-HUB复位用
     return RES_OK;
 }
 
