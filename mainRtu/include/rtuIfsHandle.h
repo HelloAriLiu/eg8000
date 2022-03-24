@@ -6,16 +6,15 @@
  */
 #ifndef _RTUIFSHANDLE_H
 #define _RTUIFSHANDLE_H
-#include "../lib/include/zh_ain.h"
+#include "../lib/include/zh_aio.h"
 #include "../lib/include/zh_gpio.h"
 
 typedef struct
 {
     float ainValue[AI_NUM];
 
-    float aoutNewValue[DOUT_NUM];
-    float aoutOldValue[DOUT_NUM];
-
+    float aoutNewValue[AO_NUM];
+    float aoutOldValue[AO_NUM];
 
     unsigned int dinNewState[DIN_NUM];
     unsigned int dinOldState[DIN_NUM];

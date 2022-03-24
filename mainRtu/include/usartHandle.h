@@ -1,3 +1,9 @@
+/*
+ * @Description :  
+ * @FilePath: /app_code/mainRtu/include/usartHandle.h
+ * @Author:  LR
+ * @Date: 2021-12-24 14:59:29
+ */
 
 #ifndef _USARTHANDLE_H
 #define _USARTHANDLE_H
@@ -5,7 +11,7 @@
 /* 串口的处理调用 */
 
 
-#define USART_NUM 2
+#define USART_NUM 3
 
 typedef struct
 {

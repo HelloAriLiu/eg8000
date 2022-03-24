@@ -258,30 +258,31 @@ int localServer_sys_dataProc(int socketFd, char *recvData, int recvLen)
             }
             else if (strcmp(_msgType, "getSysTH") == 0)
             {
-                Struct_sysTh sysTempHumi;
-                if (zh_get_sysTH(&sysTempHumi) != RES_OK)
-                {
-                    cJSON_Delete(pJsonRoot);
-                    cJSON_Delete(pR1);
-                    return RES_ERROR;
-                }
-                cJSON_AddNumberToObject(pSubJson, "temp", sysTempHumi.temp);
-                cJSON_AddNumberToObject(pSubJson, "humi", sysTempHumi.humi);
+                // Struct_sysTh sysTempHumi;
+                // if (zh_get_sysTH(&sysTempHumi) != RES_OK)
+                // {
+                //     cJSON_Delete(pJsonRoot);
+                //     cJSON_Delete(pR1);
+                //     return RES_ERROR;
+                // }
+                // cJSON_AddNumberToObject(pSubJson, "temp", sysTempHumi.temp);
+                // cJSON_AddNumberToObject(pSubJson, "humi", sysTempHumi.humi);
 
-                p = cJSON_PrintUnformatted(pJsonRoot);
-                if (p != NULL)
-                {
-                    send_localServer_sys_data(socketFd, (uint8_t *)p, strlen(p));
-                    free(p);
-                    cJSON_Delete(pJsonRoot);
-                }
-                else
-                {
-                    cJSON_Delete(pJsonRoot);
-                    cJSON_Delete(pR1);
-                    return RES_ERROR;
-                }
+                // p = cJSON_PrintUnformatted(pJsonRoot);
+                // if (p != NULL)
+                // {
+                //     send_localServer_sys_data(socketFd, (uint8_t *)p, strlen(p));
+                //     free(p);
+                //     cJSON_Delete(pJsonRoot);
+                // }
+                // else
+                // {
+                //     cJSON_Delete(pJsonRoot);
+                //     cJSON_Delete(pR1);
+                //     return RES_ERROR;
+                // }
             }
+            
             else
             {
                 cJSON_Delete(pR1);

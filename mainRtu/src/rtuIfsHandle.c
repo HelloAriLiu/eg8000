@@ -1,6 +1,6 @@
 #include "baseInit.h"
 #include "zh_gpio.h"
-#include "zh_ao.h"
+#include "zh_aio.h"
 #include "usartHandle.h"
 #include "cJSON.h"
 #include "localServer_di.h"
@@ -46,20 +46,17 @@ void rtuIfs_init(void)
 ***************************************************/
 void ainHandle(void)
 {
-    //  if (ifs_flag.ain_tick > 10) /* 1s采集频率 */
+    Struct_Ain ainvalue;
+    if (zh_ain_getValue(&ainvalue) == RES_OK)
     {
-        Struct_Ain ainvalue;
-        if (zh_ain_getValue(&ainvalue) == RES_OK)
+        int i = 0;
+        for (i = 0; i < AI_NUM; i++)
         {
-            int i = 0;
-            for (i = 0; i < AI_NUM; i++)
-            {
-                ifs_data.ainValue[i] = ainvalue.ai_value[i];
-            }
+            ifs_data.ainValue[i] = ainvalue.ai_value[i];
         }
-
-        ifs_data.ain_tick = 0;
     }
+
+    //ifs_data.ain_tick = 0;
 }
 /***************************************************
  * 功能：AO处理
@@ -68,66 +65,15 @@ void ainHandle(void)
  * 作者 ：LR
  * 修改日期 ：2020年08月12日 
 ***************************************************/
-unsigned char getCmd[8] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x08, 0x44, 0x0C};
-unsigned char setCmd[25] = {0x01, 0x10, 0x00, 0x00, 0x00, 0x08, 0x10, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAA, 0xBB};
-unsigned char readBuff[1024];
-unsigned int readBuffLen = 0;
 void aoHandle(void)
 {
-    // static int cnt = 0;
-    // bool setFlag = false;
-    // char i = 0;
-    // if(cnt++ >= 60)
-    // {
-    //     cnt = 0;
-    //     readBuffLen = zh_usart_read(usart_info.usart_fd[3], readBuff);
-    //     zh_usart_send(usart_info.usart_fd[3], getCmd, 8);
-    //     usleep(50000);
-    //     bzero(&readBuff, sizeof(readBuff));
-    //     readBuffLen = zh_usart_read(usart_info.usart_fd[3], readBuff);
-    //     if(readBuffLen == 21)
-    //     {
-    //         for(i = 0; i < AO_NUM; i++)
-    //         {
-    //             ifs_data.aoGetValue[i] = (float)(readBuff[3+2*i]<<8 | readBuff[4+2*i])/1000;
-    //         }
-    //     }
-    // }
-    // for(i = 0; i < AO_NUM; i++)
-    // {
-    //     if(ifs_data.aoSetValue[i] >= 0)
-    //     {
-    //         unsigned int aoSetValue = ifs_data.aoSetValue[i] * 1000;
-    //         setCmd[7+2*i] = aoSetValue >> 8;
-    //         setCmd[8+2*i] = aoSetValue;
-    //         ifs_data.aoSetValue[i] = -1;
-    //         setFlag = true;
-    //     }
-    //     else
-    //     {
-    //         setCmd[7+2*i] = 0xFF;
-    //         setCmd[8+2*i] = 0xFF;
-    //     }
-    // }
-    // if(setFlag)
-    // {
-    //     setFlag = false;
-    //     set_crc16(setCmd,23);
-    //     zh_usart_send(usart_info.usart_fd[3], setCmd, 25);
-    //     usleep(50000);
-    // }
-    Enum_AoutName aoutname;
     int i = 0;
-    for (i = 0; i < AOUT_NUM; i++)
+    for (i = 0; i < AO_NUM; i++)
     {
         if (ifs_data.aoutNewValue[i] != 100)
         {
-
             //如果状态需要
-            aoutname = i;
-            char temp[256];
-
-            if (zh_aout_setLevel(aoutname, ifs_data.aoutNewValue[i]) == RES_OK)
+            if (zh_aout_setValue(i, ifs_data.aoutNewValue[i]) == RES_OK)
                 ifs_data.aoutOldValue[i] = ifs_data.aoutNewValue[i]; //状态置位
 
             ifs_data.aoutNewValue[i] = 100;

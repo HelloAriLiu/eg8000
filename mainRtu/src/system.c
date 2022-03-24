@@ -311,7 +311,7 @@ void wdg_handle(void)
 {
     if (sys_info.wdg_tick > 100) /* 10s */
     {
-        zh_iwdg_feed();
+        zh_wdg_feed();
         sys_info.wdg_tick = 0;
     }
 }

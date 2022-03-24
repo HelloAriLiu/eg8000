@@ -1,13 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-11-26 17:54:06
- * @LastEditTime: 2022-03-22 09:43:20
+ * @LastEditTime: 2022-03-23 19:34:29
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /app_code/Zh_Driver/include/zh_base.h
  */
 #ifndef __ZH_BASE_H__
 #define __ZH_BASE_H__
+
 #include <stdio.h>
 #include <termios.h>
 #include <linux/ioctl.h>
@@ -207,7 +208,7 @@ int zh_vin_getValue(void);
  * 作者 ：LR
  *修改日期 ：2020年07月4日 
 *******************************************************************************************/
-int zh_iwdg_feed(void);
+int zh_wdg_feed(void);
 
 /******************************************************************************************
 *功能描述 ：杀死指定名称的进程

@@ -1,7 +1,6 @@
 #include "baseInit.h"
 #include "zh_usart.h"
 #include "zh_network.h"
-#include "zh_led.h"
 #include "cJSON.h"
 
 sysBasic_T sysBasic;
@@ -632,6 +631,12 @@ int init_dev_cfg(void)
 void init_dev(void)
 {
     log_init();
+    if(zh_board_init()!=RES_OK)
+    {
+        log_e("zh_board_init Failed\n");
+        exit(0);
+    }
+    
 
     memset(&sysBasic, 0, sizeof(sysBasic_T));
     memset(&lteBasic, 0, sizeof(lteBasic_T));

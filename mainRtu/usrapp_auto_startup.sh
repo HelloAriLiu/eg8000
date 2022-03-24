@@ -47,4 +47,5 @@ do
         sudo ./$APP_SERVICE_NAME &
     fi
     sleep 600
+    
 done

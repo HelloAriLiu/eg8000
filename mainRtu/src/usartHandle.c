@@ -24,12 +24,10 @@ void usart_init(void)
     int i = 0;
     for (i = 0; i < USART_NUM; i++)
     {
-        if(i == 0) usart_info.usart_fd[i] = zh_usart_open(3);
-        else if(i == 1) usart_info.usart_fd[i] = zh_usart_open(4);
-        // else if(i == 2) usart_info.usart_fd[i] = zh_usart_open(2);
-        // else if(i == 3) usart_info.usart_fd[i] = zh_usart_open(5);
-        // else if(i == 4) usart_info.usart_fd[i] = zh_usart_open(1);
-            
+        if(i == 0) usart_info.usart_fd[i] = zh_usart_open(USART_1);
+        else if(i == 1) usart_info.usart_fd[i] = zh_usart_open(USART_2);
+        else if(i == 2) usart_info.usart_fd[i] = zh_usart_open(USART_3);
+        
         if (usart_info.usart_fd[i] > 0)
         {
             zh_usart_init(usart_info.usart_fd[i], B_115200, DB_CS8, SB_1, PB_NONE);

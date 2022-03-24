@@ -68,6 +68,7 @@ int mqtt_init(void)
 
     conn_opts.username = "device_A584A6CA21E88B27";
     conn_opts.password = "A584A6CA21E88B27";
+    conn_opts.connectTimeout = 10;
     //snprintf(ADDRESS, sizeof(ADDRESS), "ssl://121.36.229.225:8883");
     snprintf(ADDRESS, sizeof(ADDRESS), "tcp://139.129.229.113:1883");
     snprintf(CLIENTID, sizeof(CLIENTID), "%s", sysBasic.sn);
@@ -167,6 +168,31 @@ void mqtt_connlost_callback(void *context, char *cause)
 }
 
 /**
+ * @brief :  指数补偿算法 ，如果连接失败后每一次休眠的时间会指数级增长。防止频繁重连.
+ * @param {*}
+ * @return {*}
+ * @author: LR
+ * @Date: 2022-01-13 11:16:51
+ */
+#define MAXSLEEP 120
+int mqtt_connect_retry(void)
+{
+    int numsec;
+    for (numsec = 1; numsec <= MAXSLEEP; numsec <<= 1)
+    {
+        if (mqtt_connect() == MQTTCLIENT_SUCCESS)
+        {
+            return MQTTCLIENT_SUCCESS;
+        }
+        if (numsec <= MAXSLEEP / 2)
+            sleep(numsec);
+    }
+
+    return MQTTCLIENT_FAILURE;
+}
+
+
+/**
  * @brief :  mqtt-连接处理
  * @param {*}
  * @return {*}
@@ -194,6 +220,7 @@ int mqtt_connect(void)
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {
         log_i("Failed to connect, return code %d\n", rc);
+        sleep(10);
         MQTTClient_destroy(&client);
         return MQTTCLIENT_FAILURE;
     }
@@ -202,30 +229,6 @@ int mqtt_connect(void)
     return MQTTCLIENT_SUCCESS;
 }
 
-/**
- * @brief :  指数补偿算法 ，如果连接失败后每一次休眠的时间会指数级增长。防止频繁重连.
- * @param {*}
- * @return {*}
- * @author: LR
- * @Date: 2022-01-13 11:16:51
- */
-#define MAXSLEEP 120
-int mqtt_connect_retry(void)
-{
-    int numsec;
-
-    for (numsec = 1; numsec <= MAXSLEEP; numsec <<= 1)
-    {
-        if (mqtt_connect() == MQTTCLIENT_SUCCESS)
-        {
-            return MQTTCLIENT_SUCCESS;
-        }
-        if (numsec <= MAXSLEEP / 2)
-            sleep(numsec);
-    }
-
-    return MQTTCLIENT_FAILURE;
-}
 
 /**
  * @brief :  mqtt-订阅消息

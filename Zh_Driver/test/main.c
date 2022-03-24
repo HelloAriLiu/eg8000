@@ -25,10 +25,10 @@ int main(void)
     // }
     // printf(" aout set [8.0    12.0     16.0     20.0]\n");
 
-   if( zh_dataCall_init("","","")==RES_OK)
-   {
-       printf("zh_dataCall_init  ok\n");
-   }
+//    if( zh_dataCall_init("","","")==RES_OK)
+//    {
+//        printf("zh_dataCall_init  ok\n");
+//    }
 
     while (1)
     {

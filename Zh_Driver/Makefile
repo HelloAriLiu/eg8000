@@ -14,10 +14,11 @@ OBJS=$(patsubst %c,%o,$(SRCS))
 
 all: $(TARGET)
 	#mv -f $(TARGET)  ./obj/
-	#mv -f $(TARGET)	../mainRtu/lib/
 	mv -f $(OBJS) ./obj/
 	cd ./test/ && make
-	#cp -a include/*  ../mainRtu/lib/include/
+	cp  $(TARGET)	../mainRtu/lib/
+	cp -a include/*  ../mainRtu/lib/include/
+	
 	
 $(TARGET) : $(OBJS)
 	$(AR) -rc $@ $^

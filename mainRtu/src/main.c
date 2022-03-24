@@ -50,7 +50,8 @@ work work_Register[] =
 		{10, "sys_work_task", sys_work_task},
 		{11, "localserver_usart_0_task", localserver_usart_0_task},
 		{12, "localserver_usart_1_task", localserver_usart_1_task},
-		{13, "mqtt_work_task", mqtt_work_task},
+		{13, "localserver_usart_2_task", localserver_usart_2_task},
+		{14, "mqtt_work_task", mqtt_work_task},
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -159,6 +160,17 @@ void localserver_usart_1_task(int work_num)
 	}
 }
 
+void localserver_usart_2_task(int work_num)
+{
+	prctl(PR_SET_NAME, "usart2S_work");
+	init_localServer_usart_service(2);
+	while (1)
+	{
+		create_localServer_usart_service(2);
+		usleep(50000);
+	}
+}
+
 /************************************************************
 *功能描述 ： 本地TCP服务器任务
 ************************************************************/
@@ -252,6 +264,7 @@ void sys_work_task(int work_num)
 		upsHandle();
 		led_display();
 		sysCmdMonitor();
+		wdg_handle();
 		usleep(50000);
 	}
 }

@@ -81,7 +81,7 @@ int localServer_ao_dataProc(int socketFd, char *recvData, int recvLen)
                 Throw(Ex, RES_ERROR);
             }
             ao_index = pR3->valueint;
-            if (ao_index < 1 || ao_index > AOUT_NUM)
+            if (ao_index < 1 || ao_index > AO_NUM)
                 Throw(Ex, RES_ERROR);
 
             snprintf(temp, sizeof(temp), "{\"msgType\":\"getAoutValueAck\",\"data\":{\"index\":%d,\"value\":%f}}", ao_index, ifs_data.aoutOldValue[ao_index - 1]);
@@ -108,7 +108,7 @@ int localServer_ao_dataProc(int socketFd, char *recvData, int recvLen)
             cJSON_AddStringToObject(pS1, "msgType", "getAoutValueAllAck");
             cJSON_AddItemToObject(pS1, "data", pS2 = cJSON_CreateObject());
             {
-                for (i = 0; i < AOUT_NUM; i++)
+                for (i = 0; i < AO_NUM; i++)
                 {
                     sprintf(temp, "ch%d", i + 1);
                     cJSON_AddNumberToObject(pS2, temp, ifs_data.aoutOldValue[i]);
@@ -130,7 +130,7 @@ int localServer_ao_dataProc(int socketFd, char *recvData, int recvLen)
                 Throw(Ex, RES_ERROR);
             }
             ao_index = pR3->valueint;
-            if (ao_index < 1 || ao_index > AOUT_NUM)
+            if (ao_index < 1 || ao_index > AO_NUM)
             {
                 snprintf(temp, sizeof(temp), "{\"msgType\":\"setAoutValueAck\",\"data\":{\"status\":1}}");
                 send_localServer_ao_data(socketFd, (uint8_t *)temp, strlen(temp));

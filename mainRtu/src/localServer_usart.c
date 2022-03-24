@@ -25,7 +25,7 @@ pthread_mutex_t Usart_Server_Mutex[USART_NUM] = PTHREAD_MUTEX_INITIALIZER;
 *************************************************/
 void init_localServer_usart_service(int index)
 {
-    if (index < 0 || index > 1)
+    if (index < 0 || index >= USART_NUM)
         return;
     memset(&localServer_usart_info[index], 0, sizeof(localServer_usart_info_T));
 }
@@ -40,7 +40,7 @@ void init_localServer_usart_service(int index)
  */
 int usart_socket_registerCheck(int usartIndex, char *readBuff, int readLen)
 {
-    if (usartIndex < 0 || usartIndex > 1)
+    if (usartIndex < 0 || usartIndex >= USART_NUM)
         return RES_ERROR;
     // 用于获取来自TCP的JSON结构
     cJSON *pR1;
@@ -218,7 +218,7 @@ void *fun_usart_thrReceiveHandler(void *socketInfo)
 *************************************************/
 void create_localServer_usart_service(int index)
 {
-    if (index < 0 || index > 1)
+    if (index < 0 || index >= USART_NUM)
         return;
     clientSocketInfo socketInfo;
     int server_fd = -1;
