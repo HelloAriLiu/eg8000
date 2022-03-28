@@ -25,10 +25,10 @@ int main(void)
     // }
     // printf(" aout set [8.0    12.0     16.0     20.0]\n");
 
-//    if( zh_dataCall_init("","","")==RES_OK)
-//    {
-//        printf("zh_dataCall_init  ok\n");
-//    }
+    //    if( zh_dataCall_init("","","")==RES_OK)
+    //    {
+    //        printf("zh_dataCall_init  ok\n");
+    //    }
 
     while (1)
     {
@@ -42,9 +42,15 @@ int main(void)
         //     printf("ain get error\n");
         // }
 
+        zh_led_setValue(LED_1, LED_ON);
+        zh_led_setValue(LED_2, LED_ON);
+        sleep(1);
+        zh_led_setValue(LED_1, LED_OFF);
+        zh_led_setValue(LED_2, LED_OFF);
+        sleep(1);
         zh_wdg_feed();
         printf("UPS=%d \n", zh_vin_getValue());
-        sleep(1);
+       // sleep(1);
     }
 
     // Struct_DinLevel dinLevel;

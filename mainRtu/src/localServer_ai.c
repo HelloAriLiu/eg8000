@@ -204,7 +204,7 @@ void create_localServer_ai_service(void)
         return;
     }
     /* set socket option */
-    int opt = SO_REUSEADDR;
+    int opt = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     bzero(&server, sizeof(server));
     server.sin_family = AF_INET;
@@ -214,6 +214,7 @@ void create_localServer_ai_service(void)
     if (bind(server_fd, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
         log_e("AI Server Bind() ERROR: %s\n", strerror(errno));
+        //kill_process_by_port(AI_LISTEN_PORT);
         close(server_fd); /* close server_fd */
         sleep(3);
         return;

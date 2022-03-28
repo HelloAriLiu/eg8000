@@ -46,7 +46,7 @@ void log_init(void)
 int reset_dev_cfg(void)
 {
     snprintf(sysBasic.userPassword, sizeof(sysBasic.userPassword), "EG12345678");
-    snprintf(sysBasic.model, sizeof(sysBasic.model), "EG8000");
+    snprintf(sysBasic.model, sizeof(sysBasic.model), "eg8000");
     snprintf(sysBasic.sn, sizeof(sysBasic.sn), "%s", zh_get_sn());
     snprintf(sysBasic.nodeVersion, sizeof(sysBasic.nodeVersion), "%s", zh_get_nodeVersion()); // 获取SN
     snprintf(sysBasic.version, sizeof(sysBasic.version), "%s_%s", DEV_VERSION, sysBasic.nodeVersion);
@@ -664,4 +664,6 @@ void init_dev(void)
     init_dev_cfg();
     openvpn_config();
     openvpn_service_ctl(ENABLE);
+    frp_service_ctl(DISABLE);
 }
+

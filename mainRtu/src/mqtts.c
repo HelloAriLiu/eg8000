@@ -70,7 +70,7 @@ int mqtt_init(void)
     conn_opts.password = "A584A6CA21E88B27";
     conn_opts.connectTimeout = 10;
     //snprintf(ADDRESS, sizeof(ADDRESS), "ssl://121.36.229.225:8883");
-    snprintf(ADDRESS, sizeof(ADDRESS), "tcp://139.129.229.113:1883");
+    snprintf(ADDRESS, sizeof(ADDRESS), "tcp://bridge.iotrouter.com:1883");
     snprintf(CLIENTID, sizeof(CLIENTID), "%s", sysBasic.sn);
     snprintf(REGPUB, sizeof(REGPUB), "client/device/eg8000/register/up");
     snprintf(REGSUB, sizeof(REGSUB), "client/device/eg8000/%s/register/down", sysBasic.sn);

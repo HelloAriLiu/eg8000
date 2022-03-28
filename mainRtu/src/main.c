@@ -235,7 +235,7 @@ void ifs_work_task(int work_num)
 		aoHandle();
 		dinHandle();
 		doutHandle();
-		usleep(50000);
+		usleep(10000);
 	}
 }
 

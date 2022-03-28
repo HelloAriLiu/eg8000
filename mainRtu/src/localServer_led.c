@@ -189,7 +189,7 @@ void create_localServer_led_service(void)
         return;
     }
     /* set socket option */
-    int opt = SO_REUSEADDR;
+    int opt = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     bzero(&server, sizeof(server));
     server.sin_family = AF_INET;

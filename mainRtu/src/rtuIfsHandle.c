@@ -46,17 +46,20 @@ void rtuIfs_init(void)
 ***************************************************/
 void ainHandle(void)
 {
-    Struct_Ain ainvalue;
-    if (zh_ain_getValue(&ainvalue) == RES_OK)
+    if (ifs_data.ain_tick % 20 == 0)
     {
-        int i = 0;
-        for (i = 0; i < AI_NUM; i++)
+        Struct_Ain ainvalue;
+        if (zh_ain_getValue(&ainvalue) == RES_OK)
         {
-            ifs_data.ainValue[i] = ainvalue.ai_value[i];
+            int i = 0;
+            for (i = 0; i < AI_NUM; i++)
+            {
+                ifs_data.ainValue[i] = ainvalue.ai_value[i];
+            }
         }
-    }
 
-    //ifs_data.ain_tick = 0;
+        ifs_data.ain_tick = 0;
+    }
 }
 /***************************************************
  * 功能：AO处理
@@ -90,7 +93,7 @@ void aoHandle(void)
 void dinHandle(void)
 {
     int i = 0;
-    // if (ifs_flag.din_tick > 10) /* 1s采集频率 */
+    if (ifs_data.din_tick > 10) /* 1s采集频率 */
     {
         Struct_DinLevel dinLevel;
         if (zh_din_get(&dinLevel) == RES_OK)
@@ -112,43 +115,43 @@ void dinHandle(void)
             return;
         }
         ifs_data.din_tick = 0;
-    }
 
-    //协议组装
-    char *p = NULL;
-    cJSON *pW1st = {NULL};
-    cJSON *pW2 = {NULL};
+        //协议组装
+        char *p = NULL;
+        cJSON *pW1st = {NULL};
+        cJSON *pW2 = {NULL};
 
-    //bool di_chenge = false;
-    for (i = 0; i < DIN_NUM; i++)
-    {
-        if (ifs_data.dinOldState[i] != ifs_data.dinNewState[i])
+        //bool di_chenge = false;
+        for (i = 0; i < DIN_NUM; i++)
         {
-            //di_chenge = true;
-            ifs_data.dinOldState[i] = ifs_data.dinNewState[i];
-            if ((pW1st = cJSON_CreateObject()) == NULL) // 创建一个JSON
+            if (ifs_data.dinOldState[i] != ifs_data.dinNewState[i])
             {
-                log_e(" cJSON_CreateObject())==NULL\n");
-                cJSON_Delete(pW1st);
-                continue;
-            }
-            cJSON_AddStringToObject(pW1st, "msgType", "rptDinChange"); // 组建回复包
-            cJSON_AddItemToObject(pW1st, "data", pW2 = cJSON_CreateObject());
-            {
-                cJSON_AddNumberToObject(pW2, "index", i + 1);
-                cJSON_AddNumberToObject(pW2, "value", ifs_data.dinOldState[i]);
-            }
-
-            p = cJSON_PrintUnformatted(pW1st); //未序列化输出
-            cJSON_Delete(pW1st);
-            for (i = 0; i < DI_LISTEN_MAX_CLIENT_NUM; i++) // 给DI节点上报
-            {
-                if (localServer_di_info.socketIsLive[i] == 1)
+                //di_chenge = true;
+                ifs_data.dinOldState[i] = ifs_data.dinNewState[i];
+                if ((pW1st = cJSON_CreateObject()) == NULL) // 创建一个JSON
                 {
-                    send_localServer_di_data(localServer_di_info.socketConGroup[i], (uint8_t *)p, strlen(p));
+                    log_e(" cJSON_CreateObject())==NULL\n");
+                    cJSON_Delete(pW1st);
+                    continue;
                 }
+                cJSON_AddStringToObject(pW1st, "msgType", "rptDinChange"); // 组建回复包
+                cJSON_AddItemToObject(pW1st, "data", pW2 = cJSON_CreateObject());
+                {
+                    cJSON_AddNumberToObject(pW2, "index", i + 1);
+                    cJSON_AddNumberToObject(pW2, "value", ifs_data.dinOldState[i]);
+                }
+
+                p = cJSON_PrintUnformatted(pW1st); //未序列化输出
+                cJSON_Delete(pW1st);
+                for (i = 0; i < DI_LISTEN_MAX_CLIENT_NUM; i++) // 给DI节点上报
+                {
+                    if (localServer_di_info.socketIsLive[i] == 1)
+                    {
+                        send_localServer_di_data(localServer_di_info.socketConGroup[i], (uint8_t *)p, strlen(p));
+                    }
+                }
+                free(p);
             }
-            free(p);
         }
     }
 }
